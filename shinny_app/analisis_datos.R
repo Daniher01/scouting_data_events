@@ -127,38 +127,29 @@ get_balones_perdidos <- function(player_name){
 
 get_xT <- function(player_name){
   events_with_start_and_end_pos = c("Pass", "Carry")
-  
+
   events_info_for_xt = events %>%
-    filter(type.name %in% events_with_start_and_end_pos) %>% 
-    rename("x" = "pos_x_meter",
-           "y" = "pos_y_meter") %>% 
-    mutate(finalX = case_when(type.name == "Pass" ~ "pass_end_location_x",
-                              type.name == "Carry" ~ "carry_end_location_x"),
-           finalY = case_when(type.name == "Pass" ~ "pass_end_location_y",
-                              type.name == "Carry" ~ "carry_end_location_y"))
-  
-  events_with_xt = calculate_threat(data = events_info_for_xt, type = "statsbomb") %>% 
+    filter(type.name %in% events_with_start_and_end_pos, player.name == "Toni Kroos") %>%
+    rename("x" = "location.x",
+           "y" = "location.y",
+           "finalX" = "pass.end_location.x",
+           "finalY" = "pass.end_location.y") %>%
+    mutate(finalX_event = case_when(type.name == "Pass" ~ "pass_end_location_x",
+                                    type.name == "Carry" ~ "carry_end_location_x"),
+           finalY_event = case_when(type.name == "Pass" ~ "pass_end_location_y",
+                                    type.name == "Carry" ~ "carry_end_location_y"))
+
+  events_with_xt = calculate_threat(data = events_info_for_xt, type = "statsbomb") %>%
     mutate(xt = xTEnd - xTStart)
   beep("mario")
+
 }
-
-table(events$type.name)
-
-
 
 # ------------------ METRICAS DEFENSIVAS
 
 # intercepciones
 intercepciones = events %>%
   filter(type.name == "Interception")
-
-# # despejes
-# despejes = events %>%
-#   filter(type.name == "Clearance")
-
-# #duelos ganados
-# duelos_ganados = events %>%
-#   filter(type.name == "Duel") # duel.outcome.name == "Won" | "Lost"
 
 # balones recuperados
 recuperaciones = events %>%
@@ -168,8 +159,6 @@ recuperaciones = events %>%
 
 presiones = events %>%
   filter(type.name == "Pressure")
-
-
 
 
 
