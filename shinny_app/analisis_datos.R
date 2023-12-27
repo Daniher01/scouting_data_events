@@ -145,12 +145,13 @@ get_xt <- function(player_name){
     filter(player.name == player_name)
 
   events_with_xt = calculate_threat(data = events_info_for_xt, type = "statsbomb") %>%
-    mutate(xt = xTEnd - xTStart)
+    mutate(xt = xTEnd - xTStart) %>%
+  filter(!is.na(xt))
   
 
   xT_player = events_with_xt %>%
     group_by(player.name) %>%
-    summarise(xT = sum(!is.na(xt)))
+    summarise(xT = sum(xt))
   
 
   return(list(xt_data = events_with_xt, xT_player = xT_player))
@@ -250,6 +251,7 @@ get_metricas_p90 <- function(player_name){
 }
 
 data = get_metricas_p90("Lionel Andrés Messi Cuccittini")
+
 
 
 
