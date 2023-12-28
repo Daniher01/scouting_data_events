@@ -1,7 +1,7 @@
 #------------------ obtencion de datos
-install.packages("here")
-install.packages("beepr")
-devtools::install_github("abhiamishra/ggshakeR")
+# install.packages("here")
+# install.packages("beepr")
+# devtools::install_github("abhiamishra/ggshakeR")
 
 library(ggshakeR)
 library(readr)
@@ -13,6 +13,18 @@ library(dplyr)
 games <- read_csv(here("shinny_app", "data", "statsbomb_qatar_2022_games.csv"))
 events <- read_csv(here("shinny_app", "data", "statsbomb_qatar_2022_events.csv"))
 
+# -------------------- DATOS PARA INPUT
+data_input <- function(){
+  
+  players = events %>% 
+    distinct(player.name, .keep_all = TRUE) %>% 
+    select(player.name, team.name) %>% 
+    filter(!is.na(player.name)) %>%
+    arrange(team.name)
+  
+  return(players)
+}
+
 
 # -------------------------------- METRICAS OFENSIVAS
 
@@ -23,7 +35,7 @@ get_xg <- function(player_name){
   
   xG_player = xG %>%
     group_by(player.name) %>%
-    summarise(xG = sum(xG) )%>% 
+    summarise(xG = round(sum(xG),2) )%>% 
     filter(player.name == player_name)
 
 
@@ -44,7 +56,7 @@ get_xA <- function(player_name){
   
   xA_player = xA %>%
     group_by(player.name) %>%
-    summarise(xA = sum(xA)) %>% 
+    summarise(xA = round(sum(xA), 2)) %>% 
     filter(player.name == player_name)
 
   
@@ -151,7 +163,7 @@ get_xt <- function(player_name){
 
   xT_player = events_with_xt %>%
     group_by(player.name) %>%
-    summarise(xT = sum(xt))
+    summarise(xT = round(sum(xt), 2))
   
 
   return(list(xt_data = events_with_xt, xT_player = xT_player))
@@ -245,13 +257,10 @@ get_metricas_p90 <- function(player_name){
     left_join(recuperaciones, by = "player.name") %>%
     left_join(presiones, by = "player.name") %>%
     mutate(across(-player.name, ~replace(., is.na(.), 0))) %>%
-    mutate(across(-c(player.name, minutos_totales), ~(.x/minutos_totales*90), .names = "{.col}_p90"))
+    mutate(across(-c(player.name, minutos_totales), ~(round(.x/minutos_totales*90, 2)), .names = "{.col}_p90"))
   
   return(metricas_p90)
 }
-
-data = get_metricas_p90("Lionel Andrés Messi Cuccittini")
-
 
 
 
