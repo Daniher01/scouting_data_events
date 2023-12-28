@@ -31,7 +31,6 @@ function(input, output, session) {
     tags$h1(input$in_player)
   })
 
-  
   output$info_tabla <- render_gt({
     data_info_player <- get_metricas_p90(input$in_player) %>%
       select("Minutos Jugados" = minutos_totales,

@@ -8,6 +8,9 @@ library(readr)
 library(here)
 library(beepr)
 library(dplyr)
+library(ggplot2)
+
+source("cancha.R")
 
 # Leer el archivo CSV utilizando una ruta relativa con 'here'
 games <- read_csv(here("shinny_app", "data", "statsbomb_qatar_2022_games.csv"))
@@ -24,7 +27,6 @@ data_input <- function(){
   
   return(players)
 }
-
 
 # -------------------------------- METRICAS OFENSIVAS
 
@@ -263,6 +265,8 @@ get_metricas_p90 <- function(player_name){
 }
 
 
+# gp = get_half_pitch(gp = ggplot())
+# gp
 
 
 
