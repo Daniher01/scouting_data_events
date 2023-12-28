@@ -37,9 +37,9 @@ function(input, output, session) {
   output$info_tabla <- render_gt({
     data_info_player <- get_metricas_p90(input$in_player) %>%
       select("Minutos Jugados" = minutos_totales,
+             "Tiros" = shots,
              "Goles" = goals,
              "Asistencias" = assists,
-             "Tiros" = shots,
              xG, xA, xT,
              "Dribles" = dribles,
              "Pases Progresivos" = pases_progresivos,
@@ -64,9 +64,9 @@ function(input, output, session) {
   output$info_p90_tabla <- render_gt({
     data_info_player <- get_metricas_p90(input$in_player) %>%
       select("Minutos Jugados" = minutos_totales,
+             "Tiros" = shots_p90,
              "Goles" = goals_p90,
              "Asistencias" = assists_p90,
-             "Tiros" = shots_p90,
              "xG" = xG_p90, 
             "xA" = xA_p90, 
              "xT" = xT_p90,
@@ -95,10 +95,9 @@ function(input, output, session) {
     tiros_data = get_xg(input$in_player)
     tiro_player = tiros_data$xg_detalle
     
-    ghp = get_half_pitch(gp = ggplot(data = tiro_player),pitch_fill = "black", 
-                         pitch_col = "white", background_fill = "black", margin = 0.1)
+    ghp = get_half_pitch(gp = ggplot(data = tiro_player) )
     
-    ghp + geom_point(aes(x = pos_x_meter, y = pos_y_meter, size = xG, fill = shot.outcome.name, shape = shot.body_part.name,tooltip = id, data_id = id), 
+    ghp + geom_point(aes(x = pos_x_meter, y = pos_y_meter, size = xG, fill = shot.outcome.name, shape = shot.body_part.name), 
                      alpha = 0.7) +
       # capa de estética
       scale_size_continuous(range = c(3, 6), breaks = seq(0, 1, 0.2)) +
@@ -112,26 +111,25 @@ function(input, output, session) {
       guides(fill = guide_legend(override.aes = list(shape = 21, size = 5, stroke = 1, alpha = 0.7)),
              shape = guide_legend(override.aes = list(size = 5))) +
       # permite personalizar la leyenda y los textos
-      labs(fill = "Shot outcome:",
-           size = "xG value:",
-           shape = "Body part:",
+      labs(fill = "Resultado del tiro:",
+           size = "xG:",
+           shape = "Parte del cuerpo:",
            title = "Mapa de tiros durante Qatar 2022",
            subtitle = " ")
     
   })
   
-  # observeEvent(input$click_tiro, {
-  #   tiros_data = get_xg(input$in_player)
-  #   tiro_player = tiros_data$xg_detalle
-  #   
-  #   # Obtener las coordenadas del clic
-  #   coord_x <- input$click_tiro$x
-  #   coord_y <- input$click_tiro$y
-  #   
-  #   # Identificar el punto más cercano al clic
-  #   id_del_evento <- tiro_player %>% filter(player.name == input$in_player, pos_x_meter == coord_x, pos_y_meter == coord_y)
-  #   
-  #   # Ahora puedes usar 'id_del_evento' para filtrar tu dataframe y mostrar la información en la tabla
-  # })
+  output$info_tiros <- renderDT({
+    
+    tiros_data = get_xg(input$in_player)
+    tiro_player = tiros_data$xg_detalle %>% select(
+      xG = shot.statsbomb_xg, 
+      "Resultado" = shot.outcome.name, 
+      "Parte del cuerpo" =  shot.body_part.name, 
+      "Jugada" = play_pattern.name,
+      "Partido" = to_facet)
+    
+    datatable(tiro_player, options = list(pageLength = 10, lengthChange  = FALSE))
+  })
 
 }

@@ -44,7 +44,8 @@ dashboardPage(
     tabBox(title = "Gráficos de rendimientos", width = "100%",
            tabPanel("Mapa de Tiros", 
                     fluidRow(
-                      box(width = 6,  plotOutput("tiros"))
+                      box(width = 7,  DTOutput("info_tiros")),
+                      box(width = 5,  plotOutput("tiros"))
                     )
                     ),
            tabPanel("Grafico 2"),
