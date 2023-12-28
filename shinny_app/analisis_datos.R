@@ -16,6 +16,15 @@ source("cancha.R")
 games <- read_csv(here("shinny_app", "data", "statsbomb_qatar_2022_games.csv"))
 events <- read_csv(here("shinny_app", "data", "statsbomb_qatar_2022_events.csv"))
 
+events = events %>%
+  left_join(games, 
+            select(match_id, match_date, home_team.home_team_name, away_team.away_team_name, competition_stage.name, home_score, away_score),
+            by = "match_id") %>%
+  mutate(to_facet = paste0(match_date, " vs ", 
+                           ifelse(home_team.home_team_name == team.name, 
+                                  away_team.away_team_name, home_team.home_team_name), 
+                           " (", competition_stage.name, ")"))
+
 # -------------------- DATOS PARA INPUT
 data_input <- function(){
   
@@ -32,8 +41,9 @@ data_input <- function(){
 
 get_xg <- function(player_name){
   xG = events %>%
-    filter(!is.na(shot.statsbomb_xg)) %>%
-    select(player.name, xG = shot.statsbomb_xg, play_pattern.name, shot.technique.name, shot.body_part.name, shot.outcome.name, pos_x_meter, pos_y_meter, match_id)
+    filter(!is.na(shot.statsbomb_xg), player.name == player_name) %>%
+    mutate(xG = shot.statsbomb_xg) %>%
+    left_join(games, by = "match_id")
   
   xG_player = xG %>%
     group_by(player.name) %>%
@@ -264,9 +274,6 @@ get_metricas_p90 <- function(player_name){
   return(metricas_p90)
 }
 
-
-# gp = get_half_pitch(gp = ggplot())
-# gp
 
 
 

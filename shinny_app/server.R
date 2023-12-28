@@ -7,8 +7,11 @@
 #    http://shiny.rstudio.com/
 #
 
+#install.packages("ggiraph")
+
 library(shiny)
 library(dplyr)
+library(ggiraph)
 
 source("analisis_datos.R")
 data <- data_input()
@@ -86,5 +89,49 @@ function(input, output, session) {
         locations = cells_body(columns = everything())
       )
   })
+  
+  output$tiros <- renderPlot({
+    
+    tiros_data = get_xg(input$in_player)
+    tiro_player = tiros_data$xg_detalle
+    
+    ghp = get_half_pitch(gp = ggplot(data = tiro_player),pitch_fill = "black", 
+                         pitch_col = "white", background_fill = "black", margin = 0.1)
+    
+    ghp + geom_point(aes(x = pos_x_meter, y = pos_y_meter, size = xG, fill = shot.outcome.name, shape = shot.body_part.name,tooltip = id, data_id = id), 
+                     alpha = 0.7) +
+      # capa de estética
+      scale_size_continuous(range = c(3, 6), breaks = seq(0, 1, 0.2)) +
+      scale_fill_manual(values = c("red", "yellow", "green", "blue", "white")) +
+      scale_shape_manual(values = c(23, 22, 21)) +
+      # capa de leyendas y textos
+      theme(legend.position = "right",
+            legend.margin = margin(r = 0.5, unit = "cm"),
+            legend.box = "vertical") +
+      # capa que permite sobreescribir la parte estetica a la leyenda de los datos
+      guides(fill = guide_legend(override.aes = list(shape = 21, size = 5, stroke = 1, alpha = 0.7)),
+             shape = guide_legend(override.aes = list(size = 5))) +
+      # permite personalizar la leyenda y los textos
+      labs(fill = "Shot outcome:",
+           size = "xG value:",
+           shape = "Body part:",
+           title = "Mapa de tiros durante Qatar 2022",
+           subtitle = " ")
+    
+  })
+  
+  # observeEvent(input$click_tiro, {
+  #   tiros_data = get_xg(input$in_player)
+  #   tiro_player = tiros_data$xg_detalle
+  #   
+  #   # Obtener las coordenadas del clic
+  #   coord_x <- input$click_tiro$x
+  #   coord_y <- input$click_tiro$y
+  #   
+  #   # Identificar el punto más cercano al clic
+  #   id_del_evento <- tiro_player %>% filter(player.name == input$in_player, pos_x_meter == coord_x, pos_y_meter == coord_y)
+  #   
+  #   # Ahora puedes usar 'id_del_evento' para filtrar tu dataframe y mostrar la información en la tabla
+  # })
 
 }

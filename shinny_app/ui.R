@@ -42,7 +42,11 @@ dashboardPage(
       )
     ),
     tabBox(title = "Gráficos de rendimientos", width = "100%",
-           tabPanel("Grafico 1"),
+           tabPanel("Mapa de Tiros", 
+                    fluidRow(
+                      box(width = 6,  plotOutput("tiros"))
+                    )
+                    ),
            tabPanel("Grafico 2"),
            tabPanel("Grafico 3"),
            tabPanel("Grafico 4"),
