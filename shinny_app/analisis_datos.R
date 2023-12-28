@@ -62,8 +62,11 @@ get_xA <- function(player_name){
     select(shot.key_pass_id, xA = shot.statsbomb_xg) #2
   
   xA = inner_join(events, xGA_process, by = c("id" = "shot.key_pass_id")) %>% #3
-    select(player.name, pass.shot_assist, pass.goal_assist, xA, pos_x_meter, pos_y_meter, pass_end_pos_x_meter, pass_end_pos_y_meter) %>%
-    filter(pass.shot_assist==TRUE | pass.goal_assist==TRUE) #4
+
+    filter(pass.shot_assist==TRUE | pass.goal_assist==TRUE) %>%
+    mutate(across(pass.goal_assist, ~replace(.x, is.na(.x), FALSE)),
+           across(pass.shot_assist, ~replace(.x, is.na(.x), FALSE))) %>% 
+    filter(player.name == player_name)
   
   
   xA_player = xA %>%

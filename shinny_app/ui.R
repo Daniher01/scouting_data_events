@@ -46,9 +46,12 @@ dashboardPage(
                     fluidRow(
                       box(width = 7,  DTOutput("info_tiros")),
                       box(width = 5,  plotOutput("tiros"))
-                    )
-                    ),
-           tabPanel("Grafico 2"),
+                    )),
+           tabPanel("Pases Clave",
+                    fluidRow(
+                      box(width = 7,  DTOutput("info_pases_clave")),
+                      box(width = 5,  plotOutput("pases_clave"))
+                    )),
            tabPanel("Grafico 3"),
            tabPanel("Grafico 4"),
            )

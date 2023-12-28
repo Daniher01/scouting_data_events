@@ -104,7 +104,7 @@ function(input, output, session) {
       scale_fill_manual(values = c("red", "yellow", "green", "blue", "white")) +
       scale_shape_manual(values = c(23, 22, 21)) +
       # capa de leyendas y textos
-      theme(legend.position = "right",
+      theme(legend.position = "top",
             legend.margin = margin(r = 0.5, unit = "cm"),
             legend.box = "vertical") +
       # capa que permite sobreescribir la parte estetica a la leyenda de los datos
@@ -130,6 +130,49 @@ function(input, output, session) {
       "Partido" = to_facet)
     
     datatable(tiro_player, options = list(pageLength = 10, lengthChange  = FALSE))
+  })
+  
+  output$pases_clave <- renderPlot({
+    
+    asistencias_data = get_xA(input$in_player)
+    asistencias_player = asistencias_data$xA_detalle
+    
+    gp = get_pitch(gp = ggplot(data = asistencias_player) )
+    
+    gp + geom_segment(aes(x = pos_x_meter, y = pos_y_meter, 
+                        xend = pass_end_pos_x_meter, yend = pass_end_pos_y_meter, col = pass.goal_assist),
+                    size = 0.5, linetype = 1, 
+                    arrow = arrow(length = unit(0.2,"cm"), type = "closed"), 
+                     alpha = 0.7) +
+      # capa de estética
+      scale_color_brewer(palette = "Set1") +
+      geom_point(aes(x = pos_x_meter, y = pos_y_meter, col = pass.goal_assist), 
+                 size = 1, pch = 4, stroke = 1.5, alpha = 0.5) + 
+      # capa de leyendas y textos
+      theme(legend.position = "top",
+            legend.margin = margin(r = 0.5, unit = "cm"),
+            legend.box = "vertical") +
+      # capa que permite sobreescribir la parte estetica a la leyenda de los datos
+      # guides(fill = guide_legend(override.aes = list(shape = 21, size = 5, stroke = 1, alpha = 0.7)),
+      #        shape = guide_legend(override.aes = list(size = 5))) +
+      # permite personalizar la leyenda y los textos
+      labs(col = "¿Fue Gol?:",
+           title = "Mapa de tiros durante Qatar 2022",
+           subtitle = " ")
+    
+  })
+  
+  output$info_pases_clave <- renderDT({
+    
+    asistencias_data = get_xA(input$in_player)
+    asistencias_player = asistencias_data$xA_detalle %>% select(
+      xA,
+      "Asistencia" = pass.goal_assist, 
+      "Pase Clave" =  pass.shot_assist, 
+      "Jugada" = play_pattern.name,
+      "Partido" = to_facet)
+    
+    datatable(asistencias_player, options = list(pageLength = 10, lengthChange  = FALSE))
   })
 
 }
