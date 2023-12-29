@@ -305,5 +305,15 @@ function(input, output, session) {
       facet_wrap(~to_facet, nrow = 2)
     
   })
+  
+  output$info_recuperaciones <- renderDT({
+    
+    recuperaciones = get_recuperaciones(player_name)
+    recuperaciones_detalles = recuperaciones$recuperaciones_detalle %>% select(
+      "Jugada" = play_pattern.name,
+      "Partido" = to_facet)
+    
+    datatable(recuperaciones_detalles, options = list(pageLength = 10, lengthChange  = FALSE))
+  })
 
 }

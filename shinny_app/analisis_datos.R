@@ -198,6 +198,8 @@ get_intercepciones <- function(player_name){
 }
 
 get_recuperaciones <- function(player_name){
+  
+  player_name = "Julián Álvarez"
  
   recuperaciones = events %>%
     filter(type.name == "Ball Recovery", player.name == player_name)
