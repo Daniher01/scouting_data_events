@@ -116,7 +116,7 @@ function(input, output, session) {
            size = "xG:",
            shape = "Parte del cuerpo:",
            title = "",
-           subtitle = " ")
+           subtitle = "")
     
     return(ghp)
   }
@@ -266,6 +266,44 @@ function(input, output, session) {
       "Partido" = to_facet)
     
     datatable(pp_detalle, options = list(pageLength = 10, lengthChange  = FALSE))
+  })
+  
+  # ----------- mapa de recuperaciones
+  
+  recuperaciones <- function(player_name){
+    
+    recuperaciones = get_recuperaciones(player_name)
+    recuperaciones_detalles = recuperaciones$recuperaciones_detalle
+    recuperaciones_player = recuperaciones$recuperaciones_player
+    
+    gp <- get_pitch(gp = ggplot(data = recuperaciones_detalles), dims = dims, margin = 0.6, pitch_col = "grey50", pitch_fill = "black") +
+      geom_density2d_filled(aes(x = pos_x_meter, y = pos_y_meter, fill = after_stat(level)),
+                            alpha = 0.7,
+                            contour_var = "ndensity", 
+                            breaks = seq(0.1, 1.0, length.out = 10)) +
+      theme(legend.position = "none") +
+      scale_fill_brewer(palette = "YlOrRd", direction = -1) +
+      geom_point(mapping = aes(x = pos_x_meter, y = pos_y_meter), fill = "blue", 
+                 pch = 4, alpha = 0.7, col = "blue", stroke = 1.4) +
+      ggtitle(label = paste0(recuperaciones_player$recuperaciones, " recuperaciones \n"))
+    
+    return(gp)
+    
+  }
+  
+  output$recuperaciones <- renderPlot({
+    
+    recuperaciones(input$in_player)
+    
+  })
+  
+  output$recuperaciones_to_facet <- renderPlot({
+    
+    recuperaciones = recuperaciones(input$in_player)
+    
+    recuperaciones +
+      facet_wrap(~to_facet, nrow = 2)
+    
   })
 
 }

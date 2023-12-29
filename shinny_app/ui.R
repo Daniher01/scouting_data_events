@@ -63,7 +63,13 @@ dashboardPage(
                                             tabPanel("Por Torneo" ,plotOutput("pases_progresivos")),
                                             tabPanel("Por Partido",  plotOutput("pases_progresivos_to_facet"))
                       )))),
-           tabPanel("Grafico 4"),
+           tabPanel("Recuperaciones",
+                    fluidRow(
+                      box(width = 6,  DTOutput("info_recuperaciones")),
+                      box(width = 6, tabBox(width = "100%",
+                                            tabPanel("Por Torneo" ,plotOutput("recuperaciones")),
+                                            tabPanel("Por Partido",  plotOutput("recuperaciones_to_facet"))
+                      )))),
            )
   )
 )
