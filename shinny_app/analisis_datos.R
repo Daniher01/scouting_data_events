@@ -16,6 +16,7 @@ source("cancha.R")
 games <- read_csv(here("shinny_app", "data", "statsbomb_qatar_2022_games.csv"))
 events <- read_csv(here("shinny_app", "data", "statsbomb_qatar_2022_events.csv"))
 
+# agregar faceta de juego
 events = events %>%
   left_join(games, 
             select(match_id, match_date, home_team.home_team_name, away_team.away_team_name, competition_stage.name, home_score, away_score),
@@ -24,6 +25,27 @@ events = events %>%
                            ifelse(home_team.home_team_name == team.name, 
                                   away_team.away_team_name, home_team.home_team_name), 
                            " (", competition_stage.name, ")"))
+
+# agregar contexto de los goles
+events = events %>%
+  filter(period != 5) %>% # period = 5 corresponde a definición a penales
+  mutate(is_goal = ifelse(is.na(shot.outcome.name) | shot.outcome.name != "Goal", 0, 1),
+         is_own_goal_for = ifelse(type.name == "Own Goal For", 1, 0)) %>%
+  arrange(match_id, ElapsedTime) %>%
+  # agrega el marcados de manera acumulada en cada evento
+  group_by(match_id) %>%
+  mutate(home_team_score = cumsum(ifelse(team.name == home_team.home_team_name & (is_goal == 1 | is_own_goal_for == 1), 1, 0)),
+         away_team_score = cumsum(ifelse(team.name == away_team.away_team_name & (is_goal == 1 | is_own_goal_for == 1), 1, 0))) %>%
+  # agregar contexto si es ganando perdiendo o empatando
+  mutate(contexto = case_when((team.name == home_team.home_team_name & home_team_score > away_team_score) |
+                                              (team.name == away_team.away_team_name & home_team_score < away_team_score) ~ "ganando",
+
+                                            (team.name == home_team.home_team_name & home_team_score < away_team_score) |
+                                              (team.name == away_team.away_team_name & home_team_score > away_team_score) ~ "perdiendo",
+                                            T ~ "empatando"),
+         tiempo_juego = paste(minute, second, sep = ":")) %>%
+  ungroup()
+
 
 # -------------------- DATOS PARA INPUT
 data_input <- function(){
@@ -198,8 +220,6 @@ get_intercepciones <- function(player_name){
 }
 
 get_recuperaciones <- function(player_name){
-  
-  player_name = "Julián Álvarez"
  
   recuperaciones = events %>%
     filter(type.name == "Ball Recovery", player.name == player_name)

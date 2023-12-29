@@ -46,29 +46,33 @@ dashboardPage(
                     fluidRow(
                       box(width = 6,  DTOutput("info_tiros")),
                       box(width = 6, tabBox(width = "100%",
-                                            tabPanel("Por Torneo" ,plotOutput("tiros")),
-                                            tabPanel("Por Partido",  plotOutput("tiros_to_facet"))
+                                            tabPanel("General" ,plotOutput("tiros")),
+                                            tabPanel("Por Partido",  plotOutput("tiros_to_facet")),
+                                            tabPanel("Por Contexto",  plotOutput("tiros_to_context"))
                                             )))),
            tabPanel("Pases Clave",
                     fluidRow(
                       box(width = 6,  DTOutput("info_pases_clave")),
                       box(width = 6, tabBox(width = "100%",
-                                            tabPanel("Por Torneo" ,plotOutput("pases_clave")),
-                                            tabPanel("Por Partido",  plotOutput("pases_clave_to_facet"))
+                                            tabPanel("General" ,plotOutput("pases_clave")),
+                                            tabPanel("Por Partido",  plotOutput("pases_clave_to_facet")),
+                                            tabPanel("Por Contexto",  plotOutput("pases_clave_to_context"))
                       )))),
            tabPanel("Pases Progresivos",
                     fluidRow(
                       box(width = 6,  DTOutput("info_pp_clave")),
                       box(width = 6, tabBox(width = "100%",
-                                            tabPanel("Por Torneo" ,plotOutput("pases_progresivos")),
-                                            tabPanel("Por Partido",  plotOutput("pases_progresivos_to_facet"))
+                                            tabPanel("General" ,plotOutput("pases_progresivos")),
+                                            tabPanel("Por Partido",  plotOutput("pases_progresivos_to_facet")),
+                                            tabPanel("Por Contexto",  plotOutput("pases_progresivos_to_context"))
                       )))),
            tabPanel("Recuperaciones",
                     fluidRow(
                       box(width = 6,  DTOutput("info_recuperaciones")),
                       box(width = 6, tabBox(width = "100%",
-                                            tabPanel("Por Torneo" ,plotOutput("recuperaciones")),
-                                            tabPanel("Por Partido",  plotOutput("recuperaciones_to_facet"))
+                                            tabPanel("General" ,plotOutput("recuperaciones")),
+                                            tabPanel("Por Partido",  plotOutput("recuperaciones_to_facet")),
+                                            tabPanel("Por Contexto",  plotOutput("recuperaciones_to_context"))
                       )))),
            )
   )

@@ -136,6 +136,15 @@ function(input, output, session) {
     
   })
   
+  output$tiros_to_context <- renderPlot({
+    
+    mapa_tiros = mapa_tiros(input$in_player)
+    
+    mapa_tiros +
+      facet_wrap(~contexto, nrow = 1)
+    
+  })
+  
   output$info_tiros <- renderDT({
     
     tiros_data = get_xg(input$in_player)
@@ -144,7 +153,9 @@ function(input, output, session) {
       "Resultado" = shot.outcome.name, 
       "Parte del cuerpo" =  shot.body_part.name, 
       "Jugada" = play_pattern.name,
-      "Partido" = to_facet)
+      "Partido" = to_facet,
+      "Contexto" = contexto,
+      "Tiempo de juego" = tiempo_juego)
     
     datatable(tiro_player, options = list(pageLength = 10, lengthChange  = FALSE))
   })
@@ -194,6 +205,15 @@ function(input, output, session) {
     
   })
   
+  output$pases_clave_to_context <- renderPlot({
+    
+    pases_clave = pases_clave(input$in_player)
+    
+    pases_clave +
+      facet_wrap(~contexto, nrow = 2)
+    
+  })
+  
   output$info_pases_clave <- renderDT({
     
     asistencias_data = get_xA(input$in_player)
@@ -202,7 +222,9 @@ function(input, output, session) {
       "Asistencia" = pass.goal_assist, 
       "Pase Clave" =  pass.shot_assist, 
       "Jugada" = play_pattern.name,
-      "Partido" = to_facet)
+      "Partido" = to_facet,
+      "Contexto" = contexto,
+      "Tiempo de juego" = tiempo_juego)
     
     datatable(asistencias_player, options = list(pageLength = 10, lengthChange  = FALSE))
   })
@@ -255,6 +277,15 @@ function(input, output, session) {
     
   })
   
+  output$pases_progresivos_to_context <- renderPlot({
+    
+    pases_progresivos = pases_progresivos(input$in_player)
+    
+    pases_progresivos +
+      facet_wrap(~contexto, nrow = 2)
+    
+  })
+  
   output$info_pp_clave <- renderDT({
     
     pp_data = get_pases_progresivos(input$in_player)
@@ -263,7 +294,9 @@ function(input, output, session) {
       "Tipo de pase" = pass.height.name, 
       "Asistencia" =  pass.goal_assist, 
       "Jugada" = play_pattern.name,
-      "Partido" = to_facet)
+      "Partido" = to_facet,
+      "Contexto" = contexto,
+      "Tiempo de juego" = tiempo_juego)
     
     datatable(pp_detalle, options = list(pageLength = 10, lengthChange  = FALSE))
   })
@@ -306,12 +339,23 @@ function(input, output, session) {
     
   })
   
+  output$recuperaciones_to_context <- renderPlot({
+    
+    recuperaciones = recuperaciones(input$in_player)
+    
+    recuperaciones +
+      facet_wrap(~contexto, nrow = 2)
+    
+  })
+  
   output$info_recuperaciones <- renderDT({
     
     recuperaciones = get_recuperaciones(player_name)
     recuperaciones_detalles = recuperaciones$recuperaciones_detalle %>% select(
       "Jugada" = play_pattern.name,
-      "Partido" = to_facet)
+      "Partido" = to_facet,
+      "Contexto" = contexto,
+      "Tiempo de juego" = tiempo_juego)
     
     datatable(recuperaciones_detalles, options = list(pageLength = 10, lengthChange  = FALSE))
   })
