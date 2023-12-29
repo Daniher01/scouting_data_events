@@ -41,21 +41,23 @@ dashboardPage(
               )
       )
     ),
-    tabBox(title = "Gráficos de rendimientos", width = "100%",
+    tabBox(width = "100%",
            tabPanel("Mapa de Tiros", 
                     fluidRow(
-                      box(width = 7,  DTOutput("info_tiros")),
-                      box(width = 5,  plotOutput("tiros"))
-                    )),
+                      box(width = 6,  DTOutput("info_tiros")),
+                      box(width = 6, tabBox(width = "100%",
+                                            tabPanel("Por Torneo" ,plotOutput("tiros")),
+                                            tabPanel("Por Partido",  plotOutput("tiros_to_Facet"))
+                                            )))),
            tabPanel("Pases Clave",
                     fluidRow(
-                      box(width = 7,  DTOutput("info_pases_clave")),
-                      box(width = 5,  plotOutput("pases_clave"))
+                      box(width = 6,  DTOutput("info_pases_clave")),
+                      box(width = 6,  plotOutput("pases_clave"))
                     )),
            tabPanel("Pases Progresivos",
                     fluidRow(
-                      box(width = 7,  DTOutput("info_pp_clave")),
-                      box(width = 5,  plotOutput("pases_progresivos"))
+                      box(width = 6,  DTOutput("info_pp_clave")),
+                      box(width = 6,  plotOutput("pases_progresivos"))
                     )),
            tabPanel("Grafico 4"),
            )

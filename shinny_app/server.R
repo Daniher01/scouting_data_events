@@ -90,15 +90,16 @@ function(input, output, session) {
       )
   })
   
-  output$tiros <- renderPlot({
-    
-    tiros_data = get_xg(input$in_player)
+  # ------------ mapas de tiro
+  
+  mapa_tiros <- function(player_name){
+    tiros_data = get_xg(player_name)
     tiro_player = tiros_data$xg_detalle
     
     ghp = get_half_pitch(gp = ggplot(data = tiro_player) )
     
-    ghp + geom_point(aes(x = pos_x_meter, y = pos_y_meter, size = xG, fill = shot.outcome.name, shape = shot.body_part.name), 
-                     alpha = 0.7) +
+    ghp = ghp + geom_point(aes(x = pos_x_meter, y = pos_y_meter, size = xG, fill = shot.outcome.name, shape = shot.body_part.name), 
+                           alpha = 0.7) +
       # capa de estética
       scale_size_continuous(range = c(2, 8), breaks = seq(0, 1, 0.2)) +
       scale_fill_manual(values = c("red", "yellow", "green", "blue", "orange")) +
@@ -116,6 +117,22 @@ function(input, output, session) {
            shape = "Parte del cuerpo:",
            title = "",
            subtitle = " ")
+    
+    return(ghp)
+  }
+  
+  output$tiros <- renderPlot({
+    
+    mapa_tiros(input$in_player)
+    
+  })
+  
+  output$tiros_to_Facet <- renderPlot({
+    
+    mapa_tiros = mapa_tiros(input$in_player)
+    
+    mapa_tiros +
+      facet_wrap(~to_facet, nrow = 2)
     
   })
   
@@ -181,19 +198,19 @@ function(input, output, session) {
     pp_data = get_pases_progresivos(input$in_player)
     pp_detalle = pp_data$pp_detalle
     pp_player_info = pp_data$pp_player
-    
-    
+
+
     gp = get_pitch(gp = ggplot(data = pp_detalle) )
-    
-    gp + geom_segment(aes(x = pos_x_meter, y = pos_y_meter, 
+
+    gp + geom_segment(aes(x = pos_x_meter, y = pos_y_meter,
                           xend = pass_end_pos_x_meter, yend = pass_end_pos_y_meter, col = complete_prog_pass),
-                      size = 0.5, linetype = 1, 
-                      arrow = arrow(length = unit(0.2,"cm"), type = "closed"), 
+                      size = 0.5, linetype = 1,
+                      arrow = arrow(length = unit(0.2,"cm"), type = "closed"),
                       alpha = 0.7) +
       # capa de estética
       scale_color_brewer(palette = "Set1") +
-      geom_point(aes(x = pos_x_meter, y = pos_y_meter, col = complete_prog_pass), 
-                 size = 1, pch = 4, stroke = 1.5, alpha = 0.5) + 
+      geom_point(aes(x = pos_x_meter, y = pos_y_meter, col = complete_prog_pass),
+                 size = 1, pch = 4, stroke = 1.5, alpha = 0.5) +
       # capa de leyendas y textos
       theme(legend.position = "top",
             legend.margin = margin(r = 0.5, unit = "cm"),
@@ -203,11 +220,11 @@ function(input, output, session) {
       #        shape = guide_legend(override.aes = list(size = 5))) +
       # permite personalizar la leyenda y los textos
       labs(col = "¿Pase preciso?:",
-           title = paste0(pp_player_info$pp, " pases progresivos intentados (", 
+           title = paste0(pp_player_info$pp, " pases progresivos intentados (",
                           pp_player_info$accuracy, "% de precisión)"),
            subtitle = "",
            caption = "Pase Progresivo: Todo pase cuya posición final está al menor 25% más adelante de su posición final con respecto al arco rival")
-    
+
   })
   
   output$info_pp_clave <- renderDT({
