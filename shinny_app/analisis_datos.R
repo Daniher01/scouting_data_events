@@ -12,18 +12,23 @@ library(ggplot2)
 
 source("cancha.R")
 
-# Leer el archivo CSV utilizando una ruta relativa con 'here'
-games <- read_csv(here("shinny_app", "data", "statsbomb_qatar_2022_games.csv"))
-events <- read_csv(here("shinny_app", "data", "statsbomb_qatar_2022_events.csv"))
+# usar para pruebas 
+# games <- read_csv(here("shinny_app", "data", "statsbomb_qatar_2022_games.csv"))
+# events <- read_csv(here("shinny_app", "data", "statsbomb_qatar_2022_events.csv"))
+
+# usar para deploy
+events <- read_csv("./data/statsbomb_qatar_2022_events.csv")
+games <- read_csv("./data/statsbomb_qatar_2022_games.csv")
+
 
 # agregar faceta de juego
 events = events %>%
-  left_join(games, 
+  left_join(games,
             select(match_id, match_date, home_team.home_team_name, away_team.away_team_name, competition_stage.name, home_score, away_score),
             by = "match_id") %>%
-  mutate(to_facet = paste0(match_date, " vs ", 
-                           ifelse(home_team.home_team_name == team.name, 
-                                  away_team.away_team_name, home_team.home_team_name), 
+  mutate(to_facet = paste0(match_date, " vs ",
+                           ifelse(home_team.home_team_name == team.name,
+                                  away_team.away_team_name, home_team.home_team_name),
                            " (", competition_stage.name, ")"))
 
 # agregar contexto de los goles

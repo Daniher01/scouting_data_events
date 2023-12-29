@@ -13,6 +13,7 @@ library(shiny)
 library(dplyr)
 library(ggiraph)
 
+
 source("analisis_datos.R")
 data <- data_input()
 
