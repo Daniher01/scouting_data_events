@@ -121,9 +121,9 @@ get_pases_progresivos <- function(player_name){
   pases_progresivos <- events %>%
     mutate(progressive_pass = ifelse(type.name == "Pass" & 
                                        (110 - pass_end_pos_x_meter)/(110 - pos_x_meter) <= 0.75, "Yes", "No"),
-           complete_prog_pass = ifelse(is.na(pass.outcome.name), "Yes", "No")) %>%
-    filter(progressive_pass == "Yes") %>%
-    select(player.name, progressive_pass, complete_prog_pass, pos_x_meter, pos_y_meter, pass_end_pos_x_meter, pass_end_pos_y_meter)
+           complete_prog_pass = ifelse(is.na(pass.outcome.name), "Yes", "No"),
+           pass.goal_assist = ifelse(!is.na(pass.goal_assist), "Yes", "No")) %>%
+    filter(progressive_pass == "Yes", player.name == player_name)
   
   pp_player = pases_progresivos %>%
     group_by(player.name) %>%
@@ -131,8 +131,6 @@ get_pases_progresivos <- function(player_name){
               n_complete = sum(ifelse(complete_prog_pass == "Yes", 1, 0)),
               n_incomplete = n - n_complete,
               accuracy = round(n_complete/n*100, 1)) %>%
-    arrange(desc(accuracy)) %>%
-    filter(n >= 50) %>%
     select(player.name, pp = n, n_complete, n_incomplete, accuracy) %>% 
     filter(player.name == player_name)
 
@@ -276,7 +274,6 @@ get_metricas_p90 <- function(player_name){
   
   return(metricas_p90)
 }
-
 
 
 

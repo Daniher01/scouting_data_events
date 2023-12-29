@@ -100,9 +100,9 @@ function(input, output, session) {
     ghp + geom_point(aes(x = pos_x_meter, y = pos_y_meter, size = xG, fill = shot.outcome.name, shape = shot.body_part.name), 
                      alpha = 0.7) +
       # capa de estética
-      scale_size_continuous(range = c(3, 6), breaks = seq(0, 1, 0.2)) +
-      scale_fill_manual(values = c("red", "yellow", "green", "blue", "white")) +
-      scale_shape_manual(values = c(23, 22, 21)) +
+      scale_size_continuous(range = c(2, 8), breaks = seq(0, 1, 0.2)) +
+      scale_fill_manual(values = c("red", "yellow", "green", "blue", "orange")) +
+      scale_shape_manual(values = c(23, 22, 21, 24)) +
       # capa de leyendas y textos
       theme(legend.position = "top",
             legend.margin = margin(r = 0.5, unit = "cm"),
@@ -114,7 +114,7 @@ function(input, output, session) {
       labs(fill = "Resultado del tiro:",
            size = "xG:",
            shape = "Parte del cuerpo:",
-           title = "Mapa de tiros durante Qatar 2022",
+           title = "",
            subtitle = " ")
     
   })
@@ -156,9 +156,10 @@ function(input, output, session) {
       # guides(fill = guide_legend(override.aes = list(shape = 21, size = 5, stroke = 1, alpha = 0.7)),
       #        shape = guide_legend(override.aes = list(size = 5))) +
       # permite personalizar la leyenda y los textos
-      labs(col = "¿Fue Gol?:",
-           title = "Mapa de tiros durante Qatar 2022",
-           subtitle = " ")
+      labs(col = "¿Fue Asistencia?:",
+           title = "",
+           subtitle = "Pases clave: Todo aquel pase que pudo terminar en una asistencia o terminó en asistencia, asignandole asi un xA",
+           caption = "")
     
   })
   
@@ -173,6 +174,53 @@ function(input, output, session) {
       "Partido" = to_facet)
     
     datatable(asistencias_player, options = list(pageLength = 10, lengthChange  = FALSE))
+  })
+  
+  output$pases_progresivos <- renderPlot({
+    
+    pp_data = get_pases_progresivos(input$in_player)
+    pp_detalle = pp_data$pp_detalle
+    pp_player_info = pp_data$pp_player
+    
+    
+    gp = get_pitch(gp = ggplot(data = pp_detalle) )
+    
+    gp + geom_segment(aes(x = pos_x_meter, y = pos_y_meter, 
+                          xend = pass_end_pos_x_meter, yend = pass_end_pos_y_meter, col = complete_prog_pass),
+                      size = 0.5, linetype = 1, 
+                      arrow = arrow(length = unit(0.2,"cm"), type = "closed"), 
+                      alpha = 0.7) +
+      # capa de estética
+      scale_color_brewer(palette = "Set1") +
+      geom_point(aes(x = pos_x_meter, y = pos_y_meter, col = complete_prog_pass), 
+                 size = 1, pch = 4, stroke = 1.5, alpha = 0.5) + 
+      # capa de leyendas y textos
+      theme(legend.position = "top",
+            legend.margin = margin(r = 0.5, unit = "cm"),
+            legend.box = "vertical") +
+      # capa que permite sobreescribir la parte estetica a la leyenda de los datos
+      # guides(fill = guide_legend(override.aes = list(shape = 21, size = 5, stroke = 1, alpha = 0.7)),
+      #        shape = guide_legend(override.aes = list(size = 5))) +
+      # permite personalizar la leyenda y los textos
+      labs(col = "¿Pase preciso?:",
+           title = paste0(pp_player_info$pp, " pases progresivos intentados (", 
+                          pp_player_info$accuracy, "% de precisión)"),
+           subtitle = "",
+           caption = "Pase Progresivo: Todo pase cuya posición final está al menor 25% más adelante de su posición final con respecto al arco rival")
+    
+  })
+  
+  output$info_pp_clave <- renderDT({
+    
+    pp_data = get_pases_progresivos(input$in_player)
+    pp_detalle = pp_data$pp_detalle %>% select(
+      "Pase Preciso" = complete_prog_pass,
+      "Tipo de pase" = pass.height.name, 
+      "Asistencia" =  pass.goal_assist, 
+      "Jugada" = play_pattern.name,
+      "Partido" = to_facet)
+    
+    datatable(pp_detalle, options = list(pageLength = 10, lengthChange  = FALSE))
   })
 
 }

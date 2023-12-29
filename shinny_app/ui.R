@@ -52,7 +52,11 @@ dashboardPage(
                       box(width = 7,  DTOutput("info_pases_clave")),
                       box(width = 5,  plotOutput("pases_clave"))
                     )),
-           tabPanel("Grafico 3"),
+           tabPanel("Pases Progresivos",
+                    fluidRow(
+                      box(width = 7,  DTOutput("info_pp_clave")),
+                      box(width = 5,  plotOutput("pases_progresivos"))
+                    )),
            tabPanel("Grafico 4"),
            )
   )
