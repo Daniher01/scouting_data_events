@@ -127,7 +127,7 @@ function(input, output, session) {
     
   })
   
-  output$tiros_to_Facet <- renderPlot({
+  output$tiros_to_facet <- renderPlot({
     
     mapa_tiros = mapa_tiros(input$in_player)
     
@@ -149,18 +149,19 @@ function(input, output, session) {
     datatable(tiro_player, options = list(pageLength = 10, lengthChange  = FALSE))
   })
   
-  output$pases_clave <- renderPlot({
-    
-    asistencias_data = get_xA(input$in_player)
+  # ------ mapas de pases clave
+  
+  pases_clave <- function(player_name){
+    asistencias_data = get_xA(player_name)
     asistencias_player = asistencias_data$xA_detalle
     
     gp = get_pitch(gp = ggplot(data = asistencias_player) )
     
-    gp + geom_segment(aes(x = pos_x_meter, y = pos_y_meter, 
-                        xend = pass_end_pos_x_meter, yend = pass_end_pos_y_meter, col = pass.goal_assist),
-                    size = 0.5, linetype = 1, 
-                    arrow = arrow(length = unit(0.2,"cm"), type = "closed"), 
-                     alpha = 0.7) +
+    gp = gp + geom_segment(aes(x = pos_x_meter, y = pos_y_meter, 
+                          xend = pass_end_pos_x_meter, yend = pass_end_pos_y_meter, col = pass.goal_assist),
+                      size = 0.5, linetype = 1, 
+                      arrow = arrow(length = unit(0.2,"cm"), type = "closed"), 
+                      alpha = 0.7) +
       # capa de estética
       scale_color_brewer(palette = "Set1") +
       geom_point(aes(x = pos_x_meter, y = pos_y_meter, col = pass.goal_assist), 
@@ -169,14 +170,27 @@ function(input, output, session) {
       theme(legend.position = "top",
             legend.margin = margin(r = 0.5, unit = "cm"),
             legend.box = "vertical") +
-      # capa que permite sobreescribir la parte estetica a la leyenda de los datos
-      # guides(fill = guide_legend(override.aes = list(shape = 21, size = 5, stroke = 1, alpha = 0.7)),
-      #        shape = guide_legend(override.aes = list(size = 5))) +
       # permite personalizar la leyenda y los textos
       labs(col = "¿Fue Asistencia?:",
            title = "",
            subtitle = "Pases clave: Todo aquel pase que pudo terminar en una asistencia o terminó en asistencia, asignandole asi un xA",
            caption = "")
+    
+    return(gp)
+  }
+  
+  output$pases_clave <- renderPlot({
+    
+    pases_clave(input$in_player)
+    
+  })
+  
+  output$pases_clave_to_facet <- renderPlot({
+    
+    pases_clave = pases_clave(input$in_player)
+    
+    pases_clave +
+      facet_wrap(~to_facet, nrow = 2)
     
   })
   
@@ -193,16 +207,17 @@ function(input, output, session) {
     datatable(asistencias_player, options = list(pageLength = 10, lengthChange  = FALSE))
   })
   
-  output$pases_progresivos <- renderPlot({
-    
-    pp_data = get_pases_progresivos(input$in_player)
+  # ------------ pases progresivos
+  
+  pases_progresivos <- function(player_name){
+    pp_data = get_pases_progresivos(player_name)
     pp_detalle = pp_data$pp_detalle
     pp_player_info = pp_data$pp_player
-
-
+    
+    
     gp = get_pitch(gp = ggplot(data = pp_detalle) )
-
-    gp + geom_segment(aes(x = pos_x_meter, y = pos_y_meter,
+    
+    gp = gp + geom_segment(aes(x = pos_x_meter, y = pos_y_meter,
                           xend = pass_end_pos_x_meter, yend = pass_end_pos_y_meter, col = complete_prog_pass),
                       size = 0.5, linetype = 1,
                       arrow = arrow(length = unit(0.2,"cm"), type = "closed"),
@@ -215,16 +230,29 @@ function(input, output, session) {
       theme(legend.position = "top",
             legend.margin = margin(r = 0.5, unit = "cm"),
             legend.box = "vertical") +
-      # capa que permite sobreescribir la parte estetica a la leyenda de los datos
-      # guides(fill = guide_legend(override.aes = list(shape = 21, size = 5, stroke = 1, alpha = 0.7)),
-      #        shape = guide_legend(override.aes = list(size = 5))) +
       # permite personalizar la leyenda y los textos
       labs(col = "¿Pase preciso?:",
            title = paste0(pp_player_info$pp, " pases progresivos intentados (",
                           pp_player_info$accuracy, "% de precisión)"),
            subtitle = "",
-           caption = "Pase Progresivo: Todo pase cuya posición final está al menor 25% más adelante de su posición final con respecto al arco rival")
+           caption = "Pase Progresivo: Todo pase cuya posición final está al menos 25% más adelante de su posición final con respecto al arco rival")
+    
+    return(gp)
+  }
+  
+  output$pases_progresivos <- renderPlot({
+    
+    pases_progresivos(input$in_player)
 
+  })
+  
+  output$pases_progresivos_to_facet <- renderPlot({
+    
+    pases_progresivos = pases_progresivos(input$in_player)
+    
+    pases_progresivos +
+      facet_wrap(~to_facet, nrow = 2)
+    
   })
   
   output$info_pp_clave <- renderDT({
