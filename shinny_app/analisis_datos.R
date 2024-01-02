@@ -10,6 +10,31 @@ library(beepr)
 library(dplyr)
 library(ggplot2)
 
+# # Instala y carga el paquete aws.s3 si aún no lo has hecho
+# if(!require(aws.s3)) install.packages("aws.s3")
+# library(aws.s3)
+# library(aws.signature)
+# 
+# # Configura tus credenciales de AWS
+# Sys.setenv("AWS_ACCESS_KEY_ID" = "ASIAZSRCI6OQDXEKWBVF",
+#            "AWS_SECRET_ACCESS_KEY" = "WmC3IaxtFcsto1l8NRY9wztaEoZ8EMufXa+59jEt",
+#            "AWS_DEFAULT_REGION" = "us-east-1")
+# 
+# # Configura el token de sesión
+# Sys.setenv("AWS_SESSION_TOKEN" = "IQoJb3JpZ2luX2VjELH//////////wEaCXVzLWVhc3QtMSJHMEUCIEqL1IBVhDgH4rUb8CslB4khyi4EKQ6RNNErT3CcA3RZAiEApDxMW/4LB/Yq2VEkQe8YHL/Ql1ldtge21boaXX+kY6Iq7wEIShAAGgw2NTgyNzU2Mjc5MzYiDBiqnXQuXx+H58y47SrMAadg6KxP5o0mfOgrdTmHI+MsXvrhfWFIliBsMa+CrxWYU1KiyL8hyHBO6UA8LwcOyXMAKUY32v/rlhYmQPEoNwgyi/uo4VVNSAY0J25ex341cDFBnLV/ioFxFSJi88Hx/wIQ6KYPyyapCuHI1Yjoo9kYufdoaP7cQNwdDZJA/FL5xIls9iSt7BuDmwxd2rAso/G7XWJPl0V7qMLPmx83hTjM5qCOb34J/1OPK3bvRPsrX5e+OCrBSxR6K4kBhNaW/QB7AS3zzvoWRoeuuTCe8tCsBjqYAbj0r/a3lHIlWE7BeguSu/wF+q0z/MgD+rz/772W13KguZ9EPUXLUI+CZWbg+Y2dtIJ/usUsBT7CENypXTcES4v80zv1/HNw5I30MCYfaqj0hhdu4JDOoXPYi38sf37AJW5xy5NaHja8eIqubdUghe7ezEhf8ppKLEjA1JZFlMytnYEx2eotyx30F5V1JZTxr/uTPA4KQhtN")
+# # Lee el archivo CSV desde S3
+# objeto_s3_events <- get_object(
+#   object = "data/statsbomb_qatar_2022_events.csv",
+#   bucket = "data-scouting-prueba"
+# )
+# objeto_s3_games <- get_object(
+#   object = "data/statsbomb_qatar_2022_games.csv",
+#   bucket = "data-scouting-prueba"
+# )
+# 
+# events <- read.csv(text = rawToChar(objeto_s3_events))
+# games <- read.csv(text = rawToChar(objeto_s3_games))
+
 source("cancha.R")
 
 # usar para pruebas 
@@ -17,8 +42,8 @@ source("cancha.R")
 # events <- read_csv(here("shinny_app", "data", "statsbomb_qatar_2022_events.csv"))
 
 # usar para deploy
-events <- read_csv("./data/statsbomb_qatar_2022_events.csv")
-games <- read_csv("./data/statsbomb_qatar_2022_games.csv")
+events <- read_csv("./data/statsbomb_qatar_2022_events.csv", show_col_types = FALSE)
+games <- read_csv("./data/statsbomb_qatar_2022_games.csv", show_col_types = FALSE)
 
 
 # agregar faceta de juego
